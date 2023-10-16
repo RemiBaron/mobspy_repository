@@ -3,6 +3,7 @@
 """
 import pandas as pd
 from mobspy.modules.meta_class import *
+from mobspy.modules.class_of_cts_meta_specie import *
 import inspect
 
 

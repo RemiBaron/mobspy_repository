@@ -18,8 +18,7 @@ from mobspy.modules.mobspy_parameters import *
 from mobspy.modules.mobspy_expressions import *
 import re
 
-#REMI
-from contextlib import contextmanager
+
 
 
 # Easter Egg: I finished the first version on a sunday at the BnF in Paris
@@ -507,8 +506,6 @@ class Reacting_Species(ReactingSpeciesComparator):
                     to_return += '.' + cha
                 return to_return
             else:
-                print(Species.str_under_context(species_object, characteristics))
-                exit()
                 return Species.str_under_context(species_object, characteristics)
         else:
             if Species.get_simulation_context() is not None:
@@ -562,14 +559,8 @@ class Reacting_Species(ReactingSpeciesComparator):
             :param label: (int, float, str) value for the label for matching used in this reaction
         """
         super(Reacting_Species, self).__init__()
-        #REMI
         if object_reference.get_name() == 'S0' and characteristics == set():
             self.list_of_reactants = []
-        elif object_reference.get_name() == 'Context_MetaSpecies' :
-            print("Context_MetaSpecies inside the __init__ of Reacting_Species") 
-            self.list_of_reactants = [{'object': object_reference, 'characteristics': characteristics,
-                                       'stoichiometry': stoichiometry, 'label': label}]
-            print(self.list_of_reactants[0]['characteristics'])
         else:
             self.list_of_reactants = [{'object': object_reference, 'characteristics': characteristics,
                                        'stoichiometry': stoichiometry, 'label': label}]
@@ -688,15 +679,7 @@ class Reacting_Species(ReactingSpeciesComparator):
 
         return self
 
-#REMI
- 
-    def __enter__(self):
-        print("Entered the __enter__")
-        print(self)
-        return self
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        print("Exiting the __exit__")
-        return self
+
 
     @classmethod
     def is_species(cls):
@@ -1408,15 +1391,13 @@ def BaseSpecies(number_or_names=None):
     code_line = inspect.stack()[1].code_context[0][:-1]
     return _Create_Species(None, code_line, number_or_names)
 
-#REMI
-__S0, __S1, __SC, __SF = BaseSpecies(4)
+__S0, __S1, __SF = BaseSpecies(3)
 __S0.name('S0')
 __S1.name('S1')
-__SC.name('Context_MetaSpecies')
 __SF.name('End_Flag_MetaSpecies')
 EndFlagSpecies = __SF
 Zero = __S0
-C = __SC
+
 
 
 # u is reserved for units
