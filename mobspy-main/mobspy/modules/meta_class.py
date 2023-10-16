@@ -21,6 +21,7 @@ import re
 
 
 
+
 # Easter Egg: I finished the first version on a sunday at the BnF in Paris
 # If anyone is reading this, I highly recommend you study there, it is quite a nice place
 class Compiler:
@@ -616,6 +617,7 @@ class Reacting_Species(ReactingSpeciesComparator):
         return reaction
 
     # Reacting_Species call
+    
     def __call__(self, quantity):
         """
             The call operator here is used to add counts to species non-default state. This stores the characteristics
@@ -1277,6 +1279,7 @@ class Species(SpeciesComparator):
         self._species_counts = []
 
     _simulation_context = None
+    cts_context = None
 
     @classmethod
     def set_simulation_context(cls, sim):
@@ -1285,6 +1288,10 @@ class Species(SpeciesComparator):
         else:
             simlog.error('A different Simulation Object was assigned to a meta-species object under context \n'
                          'Please use only one Simulation Object per context assignment', stack_index=6)
+    
+    @classmethod
+    def update_cts_context(cls, cts_characteristics):
+        cls.cts_context = cts_characteristics
 
     @classmethod
     def reset_simulation_context(cls):
