@@ -18,6 +18,9 @@ from mobspy.modules.mobspy_parameters import *
 from mobspy.modules.mobspy_expressions import *
 import re
 
+#REMI
+from contextlib import contextmanager
+
 
 # Easter Egg: I finished the first version on a sunday at the BnF in Paris
 # If anyone is reading this, I highly recommend you study there, it is quite a nice place
@@ -490,7 +493,7 @@ class Reacting_Species(ReactingSpeciesComparator):
         'characteristics': the characteristics queried, 'stoichiometry': stoichiometry value,
         'label': label if used (None)}
     """
-
+  
     def __str__(self):
         """
             String representation of the list of reactants
@@ -559,8 +562,14 @@ class Reacting_Species(ReactingSpeciesComparator):
             :param label: (int, float, str) value for the label for matching used in this reaction
         """
         super(Reacting_Species, self).__init__()
+        #REMI
         if object_reference.get_name() == 'S0' and characteristics == set():
             self.list_of_reactants = []
+        elif object_reference.get_name() == 'Context_MetaSpecies' :
+            print("Context_MetaSpecies inside the __init__ of Reacting_Species") 
+            self.list_of_reactants = [{'object': object_reference, 'characteristics': characteristics,
+                                       'stoichiometry': stoichiometry, 'label': label}]
+            print(self.list_of_reactants[0]['characteristics'])
         else:
             self.list_of_reactants = [{'object': object_reference, 'characteristics': characteristics,
                                        'stoichiometry': stoichiometry, 'label': label}]
@@ -677,6 +686,16 @@ class Reacting_Species(ReactingSpeciesComparator):
 
             reactant['characteristics'].add(characteristic)
 
+        return self
+
+#REMI
+ 
+    def __enter__(self):
+        print("Entered the __enter__")
+        print(self)
+        return self
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        print("Exiting the __exit__")
         return self
 
     @classmethod
@@ -1066,7 +1085,6 @@ class Species(SpeciesComparator):
             :param characteristic: (str) characteristic to be added or to be use as a query in the reaction
             :return: Reacting_Species with the characteristic added for querying
         """
-
         # This is for IPython notebooks compatibility
         if characteristic == '_ipython_canary_method_should_not_exist_':
             return 0
@@ -1079,9 +1097,7 @@ class Species(SpeciesComparator):
         if characteristic not in characteristics_from_references and '$' not in characteristic:
             if len(self.get_characteristics()) == 0:
                 self.first_characteristic = characteristic
-
             self.add_characteristic(characteristic)
-
         return Reacting_Species(self, characteristics)
 
     # Species call
@@ -1096,6 +1112,7 @@ class Species(SpeciesComparator):
 
             :return self: to allow for assigning counts mid-reaction
         """
+
         if type(quantity) == int or type(quantity) == float or isinstance(quantity, Quantity) \
                 or isinstance(quantity, Mobspy_Parameter):
             quantity_dict = self.add_quantities('std$', quantity)
@@ -1316,7 +1333,6 @@ class Species(SpeciesComparator):
     def is_spe_or_reac(cls):
         return True
 
-
 _methods_Species = set(dir(Species))
 
 
@@ -1392,13 +1408,15 @@ def BaseSpecies(number_or_names=None):
     code_line = inspect.stack()[1].code_context[0][:-1]
     return _Create_Species(None, code_line, number_or_names)
 
-
-__S0, __S1, __SF = BaseSpecies(3)
+#REMI
+__S0, __S1, __SC, __SF = BaseSpecies(4)
 __S0.name('S0')
 __S1.name('S1')
+__SC.name('Context_MetaSpecies')
 __SF.name('End_Flag_MetaSpecies')
 EndFlagSpecies = __SF
 Zero = __S0
+C = __SC
 
 
 # u is reserved for units
