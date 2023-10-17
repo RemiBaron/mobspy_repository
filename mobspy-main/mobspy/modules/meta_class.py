@@ -625,10 +625,13 @@ class Reacting_Species(ReactingSpeciesComparator):
 
             :param quantity: (int, float, Quantity) count to be assigned to the species
         """
+
+        if len(Species.cts_context) != 0 : 
+            for i in Species.cts_context:
+                self = self.c(i)
         species_object = self.list_of_reactants[0]['object']
         characteristics = self.list_of_reactants[0]['characteristics']
         simulation_under_context = self.list_of_reactants[0]['object'].get_simulation_context()
-
         if type(quantity) == int or type(quantity) == float or isinstance(quantity, Quantity) \
                 or isinstance(quantity, Mobspy_Parameter):
             if len(self.list_of_reactants) != 1:
@@ -639,7 +642,7 @@ class Reacting_Species(ReactingSpeciesComparator):
         elif simulation_under_context is None:
             simlog.error(f'Reactant_Species count assignment does not support the type {type(quantity)}',
                          stack_index=2)
-
+            
         if simulation_under_context is not None:
             try:
                 if type(quantity) == str:
@@ -954,7 +957,7 @@ class Species(SpeciesComparator):
         """
             Shows the species counts stored in this object
         """
-        simlog.debug(self._species_counts)
+        print(self._species_counts)
 
     # Creation of List_Species For Simulation ##################
     def __or__(self, other):
@@ -1097,8 +1100,11 @@ class Species(SpeciesComparator):
 
             :return self: to allow for assigning counts mid-reaction
         """
-
-        if type(quantity) == int or type(quantity) == float or isinstance(quantity, Quantity) \
+        if len(Species.cts_context) != 0 :
+            for i in Species.cts_context:
+                self.c(i)
+            quantity_dict = self.add_quantities(Species.cts_context.copy(), quantity)
+        elif type(quantity) == int or type(quantity) == float or isinstance(quantity, Quantity) \
                 or isinstance(quantity, Mobspy_Parameter):
             quantity_dict = self.add_quantities('std$', quantity)
         elif isinstance(quantity, ExpressionDefiner) and not isinstance(quantity, Mobspy_Parameter):
@@ -1279,7 +1285,7 @@ class Species(SpeciesComparator):
         self._species_counts = []
 
     _simulation_context = None
-    cts_context = None
+    cts_context = set()
 
     @classmethod
     def set_simulation_context(cls, sim):
