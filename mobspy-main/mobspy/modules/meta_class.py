@@ -432,6 +432,15 @@ class Reactions:
             :raise simlog.error: if a reaction is defined under a simulation context
             :raise simlog.error: if was called from Zero to Zero
         """
+        if len(Species.cts_context) != 0 : 
+            for j in Species.cts_context:
+                    for r in reactants:
+                        r['object'].c(j)
+                        r['characteristics'].add(j)
+                    for p in products:
+                        p['object'].c(j)
+                        p['characteristics'].add(j)
+                
         try:
             to_test_context_object = reactants[0]['object']
         except IndexError:

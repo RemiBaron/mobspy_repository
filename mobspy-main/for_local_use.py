@@ -14,16 +14,18 @@ if __name__ == '__main__':
     Zero >> Grass[3]
     Antelope.starving + Grass >> Antelope.full[0.5]
     Antelope.full >> 2*Antelope.starving[0.5]
-    Tiger.rich >> 2*Tiger.rich[0.5]
     print("\n\n\nGoing into the feature")
-    with Cts.toto, Cts.titi, Cts.rich :
-        Tiger(25)
+    with Cts.toto, Cts.rich :
         print("Inside the body of the with")
+        Tiger(25)
+        Tiger >> 2*Tiger[0.5]
     print("Gone out of the feature\n\n\n")
-    All[Antelope](5), Grass(50), Tiger(100)
+    All[Antelope](5), Grass(50), Tiger.full(100)
+    Tiger.show_quantities()
     S = Simulation(Antelope | Grass | Tiger)
     S.method = 'stochastic'
     S.duration = 20
+    print(S.compile())
     S.run()
     
     
