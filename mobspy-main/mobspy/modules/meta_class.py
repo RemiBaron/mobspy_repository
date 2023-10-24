@@ -432,6 +432,13 @@ class Reactions:
             :raise simlog.error: if a reaction is defined under a simulation context
             :raise simlog.error: if was called from Zero to Zero
         """
+        # Make sure Cts is not used in reactions
+        for p in products:
+            if p['object'].get_name() == 'Context_MetaSpecies':
+                simlog.error('The Cts specie cannot be used in reactions')
+
+
+        # Add characteristics in Cts_context to each reactant and product
         if len(Species.cts_context) != 0 : 
             for j in Species.cts_context:
                     for r in reactants:
