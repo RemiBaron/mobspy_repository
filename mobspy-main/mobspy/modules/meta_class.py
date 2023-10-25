@@ -641,10 +641,12 @@ class Reacting_Species(ReactingSpeciesComparator):
 
             :param quantity: (int, float, Quantity) count to be assigned to the species
         """
-
-        if len(Species.cts_context) != 0 : 
+        #If called within a Cts context, add the characteristics of the Cts context to the reacting specie called 
+        if len(Species.cts_context) > 0 : 
             for i in Species.cts_context:
                 self = self.c(i)
+
+        # Check if the quantity is a valid type and add the new count to the reacting specie
         species_object = self.list_of_reactants[0]['object']
         characteristics = self.list_of_reactants[0]['characteristics']
         simulation_under_context = self.list_of_reactants[0]['object'].get_simulation_context()
@@ -659,6 +661,7 @@ class Reacting_Species(ReactingSpeciesComparator):
             simlog.error(f'Reactant_Species count assignment does not support the type {type(quantity)}',
                          stack_index=2)
             
+        #If called within an event context, make sure that the call is a count assignment only
         if simulation_under_context is not None:
             try:
                 if type(quantity) == str:
@@ -1116,10 +1119,13 @@ class Species(SpeciesComparator):
 
             :return self: to allow for assigning counts mid-reaction
         """
+        #If called within a Cts context, add the characteristics of the Cts context to the specie called. The specie becomes a reacting specie.
         if len(Species.cts_context) != 0 :
             for i in Species.cts_context:
                 self.c(i)
             quantity_dict = self.add_quantities(Species.cts_context.copy(), quantity)
+
+        # Check if the quantity is a valid type and add the new count to the specie
         elif type(quantity) == int or type(quantity) == float or isinstance(quantity, Quantity) \
                 or isinstance(quantity, Mobspy_Parameter):
             quantity_dict = self.add_quantities('std$', quantity)
@@ -1138,6 +1144,7 @@ class Species(SpeciesComparator):
                          f' if not under a simulation context',
                          stack_index=2)
 
+        #If called within an event context, make sure that the call is a count assignment only
         if self.get_simulation_context() is not None:
             sim_under_context = self.get_simulation_context()
 
@@ -1313,6 +1320,11 @@ class Species(SpeciesComparator):
     
     @classmethod
     def update_cts_context(cls, cts_characteristics):
+        """
+            This updates the class variable cts_context with the characteristics of the current cts context.    
+        
+            :param cts_characteristics: (set) set of characteristics of the currently active cts context.
+        """
         cls.cts_context = cts_characteristics
 
     @classmethod
