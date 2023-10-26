@@ -1054,10 +1054,12 @@ class Species(SpeciesComparator):
     @classmethod
     def _compile_defined_reaction(cls, code_line, line_number):
         new_code_line = code_line.replace(' ', '')
+        if '#' in new_code_line:
+            new_code_line = new_code_line[:(new_code_line.find("#"))]
 
         if new_code_line[-1] != ']':
             simlog.error(f'At: {code_line} \n' + f'Line number: {line_number} \n'
-                         + f'There must be a rate in the end of the reaction')
+                         + f'There must be a rate in the end of the reaction. Avoid comments in the same line as the reaction.')
 
     def __rshift__(self, other):
         """
