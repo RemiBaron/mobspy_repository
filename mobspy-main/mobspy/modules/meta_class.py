@@ -432,15 +432,15 @@ class Reactions:
             :raise simlog.error: if a reaction is defined under a simulation context
             :raise simlog.error: if was called from Zero to Zero
         """
-        # Make sure Cts is not used in reactions
+        # Make sure the any context is not used in reactions
         for p in products:
             if p['object'].get_name() == 'Context_MetaSpecies':
-                simlog.error('The Cts specie cannot be used in reactions')
+                simlog.error('The any specie cannot be used in reactions')
 
 
         # Add characteristics in Cts_context to each reactant and product
-        if len(Species.cts_context) != 0 : 
-            for j in Species.cts_context:
+        if len(Species.meta_specie_named_any_context) != 0 : 
+            for j in Species.meta_specie_named_any_context:
                     for r in reactants:
                         r['object'].c(j)
                         r['characteristics'].add(j)
@@ -641,9 +641,9 @@ class Reacting_Species(ReactingSpeciesComparator):
 
             :param quantity: (int, float, Quantity) count to be assigned to the species
         """
-        #If called within a Cts context, add the characteristics of the Cts context to the reacting specie called 
-        if len(Species.cts_context) > 0 : 
-            for i in Species.cts_context:
+        #If called within a Any context, add the characteristics of the Any context to the reacting specie called 
+        if len(Species.meta_specie_named_any_context) > 0 : 
+            for i in Species.meta_specie_named_any_context:
                 self = self.c(i)
 
         # Check if the quantity is a valid type and add the new count to the reacting specie
@@ -1121,11 +1121,11 @@ class Species(SpeciesComparator):
 
             :return self: to allow for assigning counts mid-reaction
         """
-        #If called within a Cts context, add the characteristics of the Cts context to the specie called. The specie becomes a reacting specie.
-        if len(Species.cts_context) != 0 :
-            for i in Species.cts_context:
+        #If called within a Any context, add the characteristics of the Any context to the specie called. The specie becomes a reacting specie.
+        if len(Species.meta_specie_named_any_context) != 0 :
+            for i in Species.meta_specie_named_any_context:
                 self.c(i)
-            quantity_dict = self.add_quantities(Species.cts_context.copy(), quantity)
+            quantity_dict = self.add_quantities(Species.meta_specie_named_any_context.copy(), quantity)
 
         # Check if the quantity is a valid type and add the new count to the specie
         elif type(quantity) == int or type(quantity) == float or isinstance(quantity, Quantity) \
@@ -1310,7 +1310,7 @@ class Species(SpeciesComparator):
         self._species_counts = []
 
     _simulation_context = None
-    cts_context = set()
+    meta_specie_named_any_context = set()
 
     @classmethod
     def set_simulation_context(cls, sim):
@@ -1321,13 +1321,13 @@ class Species(SpeciesComparator):
                          'Please use only one Simulation Object per context assignment', stack_index=6)
     
     @classmethod
-    def update_cts_context(cls, cts_characteristics):
+    def update_meta_specie_named_any_context(cls, meta_specie_named_any_characteristics):
         """
-            This updates the class variable cts_context with the characteristics of the current cts context.    
+            This updates the class variable meta_specie_named_any_context with the characteristics of the current any context.    
         
-            :param cts_characteristics: (set) set of characteristics of the currently active cts context.
+            :param meta_specie_named_any_characteristics: (set) set of characteristics of the currently active any context.
         """
-        cls.cts_context = cts_characteristics
+        cls.meta_specie_named_any_context = meta_specie_named_any_characteristics
 
     @classmethod
     def reset_simulation_context(cls):
