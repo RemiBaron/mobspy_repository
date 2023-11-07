@@ -509,6 +509,18 @@ class Reacting_Species(ReactingSpeciesComparator):
         'characteristics': the characteristics queried, 'stoichiometry': stoichiometry value,
         'label': label if used (None)}
     """
+    def __enter__(self):
+        """
+            Context manager for characteristics. Called in "with Example_specie.example_characteristic :" format, when entering. 
+        """
+        self.context_initiator_for_reacting_specie()
+        return 0
+
+    def __exit__(self, *args):
+        """
+            Context manager for characteristics. Called in "with Example_specie.example_characteristic :" format, when exiting. 
+        """
+        self.context_finish_for_reacting_specie()
   
     def __str__(self):
         """
@@ -712,6 +724,27 @@ class Reacting_Species(ReactingSpeciesComparator):
     @classmethod
     def is_spe_or_reac(cls):
         return True
+    
+    # Context management for reacting species
+    old_context = set()
+
+    def context_initiator_for_reacting_specie(self):
+        """
+            This adds the current context in _list_of_nested_any_contexts and then updates the Cts context in all meta-species.
+        """
+        if len(self.list_of_reactants) == 1:
+            self.old_context = Species.meta_specie_named_any_context
+            new_context = Species.meta_specie_named_any_context.union(self.list_of_reactants[0]['characteristics'])
+            Species.update_meta_specie_named_any_context(new_context)
+        else :
+            simlog.error('Contexts can only be used on basic Reacting meta species')
+
+    def context_finish_for_reacting_specie(self):
+        """
+            This removes the context which is ending from _list_of_nested_any_contexts and updates the current Cts context.
+            Then, it updates the Cts context in all meta-species.
+        """
+        Species.update_meta_specie_named_any_context(self.old_context)
 
 
 _methods_Reacting_Species = set(dir(Reacting_Species))
