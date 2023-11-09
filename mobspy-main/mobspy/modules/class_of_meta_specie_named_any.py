@@ -33,7 +33,6 @@ class Context_specie_named_any(Species) :
         if is_with == 'with':
             pass
         else:
-            print(is_with)
             simlog.error('Characteristics cannot be added to the Any specie outside of a context')
         self._set_of_characteristics_currently_under_the_any_context.add(item)
         return self
@@ -56,19 +55,19 @@ class Context_specie_named_any(Species) :
             This adds the current context in _list_of_nested_any_contexts and then updates the Any context in all meta-species.
         """
         self._list_of_nested_any_contexts.append(set(self._set_of_characteristics_currently_under_the_any_context))
-        Species.update_meta_specie_named_any_context(self._set_of_characteristics_currently_under_the_any_context)
+        Species.update_meta_specie_named_any_context(Species.meta_specie_named_any_context.union(self._set_of_characteristics_currently_under_the_any_context))
 
     def context_finish_for_meta_specie_named_any(self):
         """
             This removes the context which is ending from _list_of_nested_any_contexts and updates the current Any context.
             Then, it updates the Any context in all meta-species.
         """
-        self._list_of_nested_any_contexts.pop()
+        self._previous_set_of_characteristics_under_the_any_context = self._list_of_nested_any_contexts.pop()
         if len(self._list_of_nested_any_contexts) > 0:
             self._set_of_characteristics_currently_under_the_any_context = self._list_of_nested_any_contexts[-1]
         else:
             self._set_of_characteristics_currently_under_the_any_context = set()
-        Species.update_meta_specie_named_any_context(self._set_of_characteristics_currently_under_the_any_context)
+        Species.update_meta_specie_named_any_context(Species.meta_specie_named_any_context - self._previous_set_of_characteristics_under_the_any_context)
 
     
 

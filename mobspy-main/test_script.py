@@ -1162,6 +1162,66 @@ def test_inline_comment():
     A >> Zero[1]  # Test comment
     assert True
 
+
+def test_with_statement_any_and_species_characteristics():
+
+    Age, Color, Dense = BaseSpecies()
+    Age.old, Age.young
+    Color.red, Color.green
+    Dense.dense, Dense.sparse
+    Tree = Age * Color * Dense
+    Grass = Age * Color * Dense
+
+    with Age.old, Dense.sparse :
+        with Color.red :
+            Tree >> Grass [1]
+        with Color.blue :
+            Tree >> Grass [1]
+            Tree(10)
+        Tree(9)
+        All[Grass](1)
+    with Any.young.green :
+        Tree + Grass >> Tree + Tree [2]
+
+    S1 = Simulation(Tree | Grass)
+    S1.level = -1
+
+    assert compare_model(S1.compile(), 'test_tools/model_40.txt')
+
+    Age, Color, Dense = BaseSpecies()
+    Age.old, Age.young
+    Color.red, Color.green
+    Dense.dense, Dense.sparse
+    Tree = Age * Color * Dense
+    Grass = Age * Color * Dense
+
+    with Age.old, Dense.sparse :
+        with Any.red:
+                Tree >> Grass [1]
+        with Color.blue :
+            Tree >> Grass [1]
+            Tree(10)
+        Tree(9)
+        All[Grass](1)
+
+    S2 = Simulation(Tree | Grass)
+    S2.level = -1
+
+    assert compare_model(S2.compile(), 'test_tools/model_41.txt')
+
+
+def test_with_statement_on_any_and_event():
+
+    A = BaseSpecies()
+    A.a1, A.a2
+    S = Simulation(A)
+    S.level = -1
+
+    with Any.a2, S.event_condition(A <= 0):
+        A(100)
+        
+    assert compare_model(S.compile(), 'test_tools/model_42.txt')
+
     
 
 
@@ -1181,7 +1241,8 @@ test_list = [test_model_1, test_model_2, test_model_3, test_model_4, test_model_
              test_set_counts_parameters, test_repeated_parameters, initial_expression_test,
              test_wrong_dimension_error, test_more_than_used, zero_rate_test, test_wrong_rate,
              test_conversion_outside, test_first_characteristic_in_reacting_species, test_model_reference,
-             test_sbml_generation, test_multi_sim_sbml, test_inline_comment]
+             test_sbml_generation, test_multi_sim_sbml, test_inline_comment,
+             test_with_statement_any_and_species_characteristics, test_with_statement_on_any_and_event]
 
 sub_test = test_list
 
